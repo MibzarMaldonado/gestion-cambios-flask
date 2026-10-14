@@ -8,16 +8,17 @@ tasks = [
     {"id": 2, "title": "Diseño de arquitectura", "cost": 300}
 ]
 
+
 @app.route('/')
 def index():
-    total_budget = sum(
-        float(t["cost"]) for t in tasks
-    )
+    total_budget = sum(float(task["cost"]) for task in tasks)
+
     return render_template(
         'index.html',
         tasks=tasks,
         total_budget=total_budget
     )
+
 
 @app.route('/task/add', methods=['POST'])
 def add_task():

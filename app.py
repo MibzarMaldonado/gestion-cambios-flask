@@ -14,21 +14,22 @@ def index():
     total_budget = sum([t["cost"] for t in tasks]) if tasks else 0
     return render_template('index.html', tasks=tasks, total_budget=total_budget)
 
+
 @app.route('/task/add', methods=['POST'])
 def add_task():
     title = request.form.get('title', '').strip()
     cost_raw = request.form.get('cost', '').strip()
 
-    # Validar el título
+    # Validar que el título no esté vacío
     if not title:
         return redirect(url_for('index'))
 
-    # Validar el costo
+    # Validar y convertir el costo
     if not cost_raw:
         cost = 0
     else:
         try:
-            cost = int(cost_raw)
+            cost = float(cost_raw)
         except ValueError:
             return redirect(url_for('index'))
 
@@ -36,8 +37,8 @@ def add_task():
     if cost < 0:
         return redirect(url_for('index'))
 
-    # Generar un identificador único
-    new_id = max((t["id"] for t in tasks), default=0) + 1
+    # Generar un ID único
+    new_id = max((task["id"] for task in tasks), default=0) + 1
 
     tasks.append({
         "id": new_id,

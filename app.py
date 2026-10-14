@@ -10,9 +10,14 @@ tasks = [
 
 @app.route('/')
 def index():
-    # BUG 1: Si cost entra como string, causa TypeError al sumar int con str o concatena
-    total_budget = sum([t["cost"] for t in tasks]) if tasks else 0
-    return render_template('index.html', tasks=tasks, total_budget=total_budget)
+    total_budget = sum(
+        float(t["cost"]) for t in tasks
+    )
+    return render_template(
+        'index.html',
+        tasks=tasks,
+        total_budget=total_budget
+    )
 
 @app.route('/task/add', methods=['POST'])
 def add_task():

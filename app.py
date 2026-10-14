@@ -16,16 +16,35 @@ def index():
 
 @app.route('/task/add', methods=['POST'])
 def add_task():
-    title = request.form.get('title')
-    cost_raw = request.form.get('cost')
+    title = request.form.get('title', '').strip()
+    cost_raw = request.form.get('cost', '').strip()
 
-    # BUG 2: Permite títulos vacíos y almacena cost como string sin convertir a entero
-    new_id = len(tasks) + 1
+    # Validar el título
+    if not title:
+        return redirect(url_for('index'))
+
+    # Validar el costo
+    if not cost_raw:
+        cost = 0
+    else:
+        try:
+            cost = int(cost_raw)
+        except ValueError:
+            return redirect(url_for('index'))
+
+    # No permitir costos negativos
+    if cost < 0:
+        return redirect(url_for('index'))
+
+    # Generar un identificador único
+    new_id = max((t["id"] for t in tasks), default=0) + 1
+
     tasks.append({
         "id": new_id,
         "title": title,
-        "cost": cost_raw
+        "cost": cost
     })
+
     return redirect(url_for('index'))
 
 @app.route('/task/delete/<int:task_id>', methods=['POST'])
